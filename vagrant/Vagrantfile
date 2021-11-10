@@ -1,0 +1,40 @@
+Vagrant.configure("2") do |config|
+  config.disksize.size = '40GB'
+  config.vm.provision "shell", privileged: true, path: "./setup.sh"
+  config.vm.provider "virtualbox" do |v|
+      v.memory = 4096
+      v.cpus = 2
+  end 
+
+  config.vm.define "k8s-master1" do |vb|
+    vb.vm.host_name = "k8s-master1"
+    vb.vm.network "private_network", ip: "192.168.33.61", gateway: "192.168.33.1"
+    vb.vm.box = "centos/79"
+    # config.vm.synced_folder "/ansible/one-key-install-k8s", "/one-key-install-k8s"
+  end
+
+  config.vm.define "k8s-master2" do |vb|
+    # 单独配置硬件资源
+    vb.vm.provider "virtualbox" do |v|
+      v.memory = 4096
+      v.cpus = 2
+    end
+    vb.vm.host_name = "k8s-master2"
+    vb.vm.network "private_network", ip: "192.168.33.62", gateway: "192.168.33.1"
+    vb.vm.box = "centos/79"
+  end
+
+  config.vm.define "k8s-node1" do |vb|
+    vb.vm.host_name = "k8s-node1"
+    vb.vm.network :private_network, ip: "192.168.33.63", gateway: "192.168.33.1"
+    vb.vm.box = "centos/79"
+  end
+
+  config.vm.define "k8s-node2" do |vb|
+    vb.vm.host_name = "k8s-node2"
+    vb.vm.network :private_network, ip: "192.168.33.64", gateway: "192.168.33.1"
+    vb.vm.box = "centos/79"
+  end
+
+end
+
