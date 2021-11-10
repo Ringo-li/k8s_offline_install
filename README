@@ -4,7 +4,9 @@ https://github.com/bogeit/LearnK8s/blob/main/k8s_install_new.sh
 https://github.com/easzlab/kubeasz/blob/master/docs/setup/offline_install.md
 
 前期准备：
-3台以上安装centos7.8-2003 或者 7.9-2009的机器，其他未作测试
+1.3台以上安装centos7.8-2003 或者 7.9-2009的机器，其他未作测试
+2.获取安装包
+https://cloud.189.cn/t/VZVri27J73u2 (访问码:9wka)
 
 安装过程：
 1.解压软件包one-key-install-k8s.tar.gz
