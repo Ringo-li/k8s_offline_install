@@ -13,6 +13,19 @@ https://cloud.189.cn/t/VZVri27J73u2 (访问码:9wka)
 2.编辑host文件，设置主机信息
 3.执行bash k8s_offline_install.sh 主机root密码 集群名称
 
+安装验证：
+1.集群验证
+kubectl get node -A
+查看pod是否都正常
+2.查看ingress等服务是否正常发布dashboard服务
+
+在同网段PC的hosts文件中加一行：
+host文件中设置的VIP kubernetes.example.com
+用浏览器访问
+https://kubernetes.example.com
+获取token：
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user-token | awk '{print $1}')
+
 单独执行：
 安装出错单步安装时使用，需要一点ansible基础
 cd /etc/kubeasz

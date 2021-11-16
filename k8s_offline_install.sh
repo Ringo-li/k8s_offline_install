@@ -4,21 +4,21 @@ set -e
 BASEDIR=$(pwd)
 
 # 传参检测
-[ $# -ne 2 ] && echo -e "Usage: $0 rootpasswd k8s-cluster-name\nExample: bash $0 bogedevops k8s-cluster\n" && exit 11 
+[ $# -ne 2 ] && echo -e "Usage: $0 rootpasswd k8s-cluster-name\nExample: bash $0 rootpasswd k8s-cluster\n" && exit 11 
 
 # 变量定义
 rootpasswd=$1
 clustername=$2
 
 function ansible_install(){
-  tar -xf $BASEDIR/ansible_v2.9.9_install.tar.gz
+#  tar -xf $BASEDIR/ansible_v2.9.9_install.tar.gz
   cd $BASEDIR/ansible_v2.9.9_install
   bash ansible_v2.9.0_install.sh
 }
 
 # 配置互信
 function mutual_trust(){
-  hosts=$(grep -E  "^\w{1,3}\.\w{1,3}\.\w{1,3}\.\w{1,3}$"  $BASEDIR/hosts  | sort | uniq)
+  hosts=$(grep -E  "^\w(\w{1,3}\.){3}\w{1,3}$"  $BASEDIR/hosts  | sort | uniq)
   echo ${hosts}
   for host in ${hosts}
   do

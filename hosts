@@ -44,6 +44,9 @@ CLUSTER_NETWORK="flannel"
 # Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
 PROXY_MODE="ipvs"
 
+# Set keepalived virtual ip address
+VIP = "192.168.33.100"
+
 # K8S Service CIDR, not overlap with node(host) networking
 SERVICE_CIDR="10.68.0.0/16"
 
