@@ -11,7 +11,7 @@ rootpasswd=$1
 clustername=$2
 
 function ansible_install(){
-#  tar -xf $BASEDIR/ansible_v2.9.9_install.tar.gz
+  # tar -xf $BASEDIR/ansible_v2.9.9_install.tar.gz
   cd $BASEDIR/ansible_v2.9.9_install
   bash ansible_v2.9.0_install.sh
 }
