@@ -1,10 +1,10 @@
 #!/bin/bash
 file_list=(
 README.md
-#ansible_v2.9.9_install
+ansible_v2.9.9_install
 hosts
 k8s_offline_install.sh
-kubeasz/ansible.cfg
+#kubeasz/ansible.cfg
 #kubeasz/ezctl
 #kubeasz/ezdown
 #vagrant
