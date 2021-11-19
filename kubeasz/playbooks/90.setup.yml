@@ -71,3 +71,9 @@
   - kube_node
   roles:
   - cluster-addon
+
+# to set up ex-lb
+- hosts: 
+  - ex_lb
+  roles:
+  - ex-lb

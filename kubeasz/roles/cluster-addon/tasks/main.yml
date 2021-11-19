@@ -20,23 +20,42 @@
 - debug: var="CLUSTER_DNS_SVC_IP"
 
 - import_tasks: coredns.yml
-  when: '"coredns" not in pod_info.stdout and dns_install == "yes"'
+  when: 
+    - '"coredns" not in pod_info.stdout'
+    - dns_install == "yes"
+    - inventory_hostname not in groups['kube_master']
 
 - import_tasks: nodelocaldns.yml
-  when: '"node-local-dns" not in pod_info.stdout and ENABLE_LOCAL_DNS_CACHE|bool'
-
-- import_tasks: ingress.yml
-  when: 'ingress_install == "yes"'
-  # when: '"traefik" not in pod_info.stdout and ingress_install == "yes"' 
-
+  when: 
+    - '"node-local-dns" not in pod_info.stdout'
+    - ENABLE_LOCAL_DNS_CACHE|bool
+    - inventory_hostname not in groups['kube_master']
+    
 - import_tasks: metrics-server.yml
-  when: '"metrics-server" not in pod_info.stdout and metricsserver_install == "yes"'
+  when: 
+    - '"metrics-server" not in pod_info.stdout'
+    - metricsserver_install == "yes"
+    - inventory_hostname not in groups['kube_master']
 
 - import_tasks: dashboard.yml
-  when: '"kubernetes-dashboard" not in pod_info.stdout and dashboard_install == "yes"'
+  when: 
+    - '"kubernetes-dashboard" not in pod_info.stdout'
+    - dashboard_install == "yes"
+    - inventory_hostname not in groups['kube_master']
+
+- debug: var=ingress_install 
+
+- import_tasks: ingress.yml
+  when: 
+    - '"ingress" not in pod_info.stdout' 
+    - ingress_install == "yes"
+    - inventory_hostname in groups['kube_master']
 
 - import_tasks: prometheus.yml
-  when: '"kube-prometheus-operator" not in pod_info.stdout and prom_install == "yes"'
+  when: 
+    - '"kube-prometheus-operator" not in pod_info.stdout'
+    - prom_install == "yes"
+    - inventory_hostname not in groups['kube_master']
 
 #- block:
 #    - block:

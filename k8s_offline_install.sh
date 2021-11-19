@@ -18,6 +18,7 @@ function ansible_install(){
 
 # 配置互信
 function mutual_trust(){
+  echo "============ 配置互信 ===========";
   hosts=$(grep -E  "^\w(\w{1,3}\.){3}\w{1,3}$"  $BASEDIR/hosts  | sort | uniq)
   echo ${hosts}
   for host in ${hosts}
@@ -25,13 +26,13 @@ function mutual_trust(){
     echo "============ ${host} ===========";
     if [[ ${USER} == 'root' ]];then
         [ ! -f /${USER}/.ssh/id_rsa ] &&\
-        ssh-keygen -t rsa -P '' -f /${USER}/.ssh/id_rsa
+        ssh-keygen -t rsa -P '' -f /${USER}/.ssh/id_rsa &>/dev/null
     else
         [ ! -f /home/${USER}/.ssh/id_rsa ] &&\
-        ssh-keygen -t rsa -P '' -f /home/${USER}/.ssh/id_rsa
+        ssh-keygen -t rsa -P '' -f /home/${USER}/.ssh/id_rsa &>/dev/null
     fi
-    sshpass -p ${rootpasswd} ssh-copy-id -o StrictHostKeyChecking=no ${USER}@${host}
-    scp -r $BASEDIR/kubeasz/down/rpm ${USER}@${host}:/var/
+    sshpass -p ${rootpasswd} ssh-copy-id -o StrictHostKeyChecking=no ${USER}@${host} &>/dev/null
+    # scp -r $BASEDIR/kubeasz/down/rpm ${USER}@${host}:/var/
   done
 }
 

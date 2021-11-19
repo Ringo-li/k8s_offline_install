@@ -8,27 +8,6 @@
       warn: false
   ignore_errors: true
 
-# 修改yum源
-- name: "Create yum.repos.d/bak if it does not exist"
-  file:
-    path: /etc/yum.repos.d/bak
-    state: directory
-    mode: '0755'
-
-- name: "Move *.repo to bak"
-  shell: 
-    cmd: mv /etc/yum.repos.d/*.repo /etc/yum.repos.d/bak
-
-- name: "copy ftp.repo"
-  copy:
-    src: local.repo
-    dest: /etc/yum.repos.d/
-
-- name: "This command will reset yum cache"
-  shell:
-    cmd: yum clean all && yum makecache
-
-# 安装基础软件包
 - name: 安装基础软件包
   yum: 
     name: 

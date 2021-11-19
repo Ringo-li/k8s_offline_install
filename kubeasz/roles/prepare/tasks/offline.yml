@@ -10,7 +10,7 @@
 
   # 离线安装包可能需要安装多次才能成功
   - name: 安装 basic_xenial 离线包
-    shell: 'cd /opt/kube/packages/basic && tar zxf basic_xenial.tar.gz && \
+    shell: 'cd /opt/kube/packages/basic && tar -xf basic_xenial.tar.gz && \
            dpkg -i *.deb > /tmp/install_basic.log 2>&1'
     register: install_info
     until: not install_info.failed
@@ -27,7 +27,7 @@
 
   # 离线安装包可能需要安装多次才能成功
   - name: 安装 basic_bionic 离线包
-    shell: 'cd /opt/kube/packages/basic && tar zxf basic_bionic.tar.gz && \
+    shell: 'cd /opt/kube/packages/basic && tar -xf basic_bionic.tar.gz && \
            dpkg -i *.deb > /tmp/install_basic.log 2>&1'
     register: install_info
     until: not install_info.failed
@@ -43,7 +43,7 @@
       dest: "/opt/kube/packages/basic/basic_centos7.tar.gz"
 
   - name: 安装 basic_centos7 离线包
-    shell: 'cd /opt/kube/packages/basic && tar zxf basic_centos7.tar.gz && \
+    shell: 'cd /opt/kube/packages/basic && tar -xf basic_centos7.tar.gz && \
            rpm -Uvh --force --nodeps *.rpm > /tmp/install_basic.log 2>&1'
   when:
   - 'ansible_distribution == "CentOS"'
@@ -58,7 +58,7 @@
 
   # 离线安装包可能需要安装多次才能成功
   - name: 安装 basic_stretch 离线包
-    shell: 'cd /opt/kube/packages/basic && tar zxf basic_stretch.tar.gz && \
+    shell: 'cd /opt/kube/packages/basic && tar -xf basic_stretch.tar.gz && \
            dpkg -i *.deb > /tmp/install_basic.log 2>&1'
     register: install_info
     until: not install_info.failed
@@ -75,7 +75,7 @@
 
   # 离线安装包可能需要安装多次才能成功
   - name: 安装 basic_buster 离线包
-    shell: 'cd /opt/kube/packages/basic && tar zxf basic_buster.tar.gz && \
+    shell: 'cd /opt/kube/packages/basic && tar -xf basic_buster.tar.gz && \
            dpkg -i *.deb > /tmp/install_basic.log 2>&1'
     register: install_info
     until: not install_info.failed

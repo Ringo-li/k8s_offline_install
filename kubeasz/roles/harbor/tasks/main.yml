@@ -27,7 +27,7 @@
       dest: "/data/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
   - name: 解压 harbor 离线安装包
-    shell: "cd /data && tar zxf harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+    shell: "cd /data && tar -xf harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
   - name: 导入 harbor 所需 docker images
     shell: "{{ bin_dir }}/docker load -i /data/harbor/harbor.{{ HARBOR_VER }}.tar.gz"

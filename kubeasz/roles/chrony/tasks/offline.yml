@@ -10,7 +10,7 @@
       dest: "/opt/kube/packages/chrony/chrony_xenial.tar.gz"
 
   - name: 安装 chrony_xenial 离线包
-    shell: 'cd /opt/kube/packages/chrony && tar zxf chrony_xenial.tar.gz && \
+    shell: 'cd /opt/kube/packages/chrony && tar -xf chrony_xenial.tar.gz && \
            dpkg -i *.deb > /tmp/install_chrony.log 2>&1'
   when: ansible_distribution_release == "xenial"
   ignore_errors: true
@@ -23,7 +23,7 @@
       dest: "/opt/kube/packages/chrony/chrony_bionic.tar.gz"
 
   - name: 安装 chrony_bionic 离线包
-    shell: 'cd /opt/kube/packages/chrony && tar zxf chrony_bionic.tar.gz && \
+    shell: 'cd /opt/kube/packages/chrony && tar -xf chrony_bionic.tar.gz && \
            dpkg -i *.deb > /tmp/install_chrony.log 2>&1'
   when: ansible_distribution_release == "bionic"
   ignore_errors: true
@@ -36,7 +36,7 @@
       dest: "/opt/kube/packages/chrony/chrony_centos7.tar.gz"
 
   - name: 安装 chrony_centos7 离线包
-    shell: 'cd /opt/kube/packages/chrony && tar zxf chrony_centos7.tar.gz && \
+    shell: 'cd /opt/kube/packages/chrony && tar -xf chrony_centos7.tar.gz && \
            rpm -Uvh --force --nodeps *.rpm > /tmp/install_chrony.log 2>&1'
   when: 
   - 'ansible_distribution_major_version == "7"'
@@ -51,7 +51,7 @@
       dest: "/opt/kube/packages/chrony/chrony_stretch.tar.gz"
 
   - name: 安装 chrony_stretch 离线包
-    shell: 'cd /opt/kube/packages/chrony && tar zxf chrony_stretch.tar.gz && \
+    shell: 'cd /opt/kube/packages/chrony && tar -xf chrony_stretch.tar.gz && \
            dpkg -i *.deb > /tmp/install_chrony.log 2>&1'
   when: ansible_distribution_release == "stretch"
   ignore_errors: true
@@ -64,7 +64,7 @@
       dest: "/opt/kube/packages/chrony/chrony_buster.tar.gz"
 
   - name: 安装 chrony_buster 离线包
-    shell: 'cd /opt/kube/packages/chrony && tar zxf chrony_buster.tar.gz && \
+    shell: 'cd /opt/kube/packages/chrony && tar -xf chrony_buster.tar.gz && \
            dpkg -i *.deb > /tmp/install_chrony.log 2>&1'
   when: ansible_distribution_release == "buster"
   ignore_errors: true

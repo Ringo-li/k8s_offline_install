@@ -38,7 +38,7 @@ kubectl get pod -A
 https://kubernetes.example.com  
 获取token：
 ```
-kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user-token | awk '{print $1}')
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user-token | awk '{print $1}')
 ```
 
 # 单独执行
@@ -48,3 +48,5 @@ kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboar
 cd /etc/kubeasz
 ansible-playbook -i "clusters/k8s-cluster/hosts" -e "@clusters/k8s-cluster/config.yml" "playbooks/04.kube-master.yml" --start-at-task="准备kubelet 证书签名请求"
 ```
+安装ex-lb
+ansible-playbook -i "clusters/k8s-cluster/hosts" -e "@clusters/k8s-cluster/config.yml" "roles/ex-lb/ex-lb.yml"

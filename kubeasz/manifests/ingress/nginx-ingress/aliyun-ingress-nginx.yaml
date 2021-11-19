@@ -298,6 +298,7 @@ spec:
           path: /etc/localtime
           type: File
       nodeSelector:
+        # kubernetes.io/role : node
         kubernetes.io/role : master
       tolerations:
       - operator: Exists

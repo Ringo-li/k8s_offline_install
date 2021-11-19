@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ingress-dashboard
-  namespace: kubernetes-dashboard
+  namespace: kube-system
   annotations:
     kubernetes.io/ingress.class: "nginx"
     # 开启use-regex，启用path的正则匹配

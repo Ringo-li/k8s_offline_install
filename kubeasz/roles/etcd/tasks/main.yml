@@ -1,37 +1,16 @@
 - name: prepare some dirs
-  file: name={{ item }} state=directory mode=0755
-  loop:
-    - "{{ base_dir }}/bin"
-    - "/var/lib/etcd"
+  file: name=/var/lib/etcd state=directory mode=0700
 
 - name: 下载etcd二进制文件
   copy: src={{ base_dir }}/bin/{{ item }} dest={{ bin_dir }}/{{ item }} mode=0755
   with_items:
   - etcd
   - etcdctl
-  - cfssl
-  - cfssljson
   tags: upgrade_etcd
-
-# - name: 下载二进制文件
-#   copy: src={{ base_dir }}/bin/ dest={{ base_dir }}/ mode=0755
-#   tags: upgrade_etcd
-
-- name: prepare ssl dirs
-  file: name={{ cluster_dir }}/ssl state=directory mode=0755
 
 - name: 创建etcd证书请求
   template: src=etcd-csr.json.j2 dest={{ cluster_dir }}/ssl/etcd-csr.json
   connection: local
-
-- name: 下载ca文件
-  copy: src={{ cluster_dir }}/ssl/{{ item }} dest={{ cluster_dir }}/ssl/{{ item }} mode=0755
-  with_items:
-  - ca.pem
-  - ca-key.pem
-  - ca-config.json
-  # - etcd.csr
-  - etcd-csr.json
 
 - name: 创建 etcd证书和私钥
   shell: "cd {{ cluster_dir }}/ssl && {{ base_dir }}/bin/cfssl gencert \

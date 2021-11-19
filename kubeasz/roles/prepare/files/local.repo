@@ -1,5 +1,0 @@
-[local]
-name=local
-baseurl=file:///var/rpm/
-gpgcheck=0
-enabled=1

@@ -18,22 +18,18 @@
 # 'NEW_INSTALL': 'yes' to install a harbor server; 'no' to integrate with existed one
 # 'SELF_SIGNED_CERT': 'no' you need put files of certificates named harbor.pem and harbor-key.pem in directory 'down'
 [harbor]
-#192.168.33.68 HARBOR_DOMAIN="harbor.yourdomain.com" NEW_INSTALL=no SELF_SIGNED_CERT=yes
+# 192.168.33.20 HARBOR_DOMAIN="harbor.example.com" NEW_INSTALL=yes SELF_SIGNED_CERT=yes
 
 # [optional] loadbalance for accessing k8s from outside
 [ex_lb]
-#192.168.33.66 LB_ROLE=backup EX_APISERVER_VIP=192.168.33.250 EX_APISERVER_PORT=8443
-#192.168.33.67 LB_ROLE=master EX_APISERVER_VIP=192.168.33.250 EX_APISERVER_PORT=8443
+192.168.33.61 LB_ROLE=backup EX_APISERVER_VIP=192.168.33.100 EX_APISERVER_PORT=6443
+192.168.33.62 LB_ROLE=master EX_APISERVER_VIP=192.168.33.100 EX_APISERVER_PORT=6443
 
 # [optional] ntp server for the cluster
 [chrony]
 192.168.33.61
 
 [all:vars]
-# ansible_connection=ssh
-# ansible_ssh_pass=vagrant
-# ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-
 # --------- Main Variables ---------------
 # Cluster container-runtime supported: docker, containerd
 CONTAINER_RUNTIME="docker"
@@ -43,9 +39,6 @@ CLUSTER_NETWORK="flannel"
 
 # Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
 PROXY_MODE="ipvs"
-
-# Set keepalived virtual ip address
-VIP = "192.168.33.100"
 
 # K8S Service CIDR, not overlap with node(host) networking
 SERVICE_CIDR="10.68.0.0/16"

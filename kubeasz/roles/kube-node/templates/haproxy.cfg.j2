@@ -22,25 +22,3 @@ listen kube_master
 {% for host in groups['kube_master'] %}
         server {{ host }} {{ host }}:6443 check inter 10s fall 2 rise 2 weight 1
 {% endfor %}
-
-listen ingress-http
-        bind 0.0.0.0:80
-        mode tcp
-        option tcplog
-        option dontlognull
-        option dontlog-normal
-        balance {{ BALANCE_ALG }} 
-{% for host in groups['kube_master'] %}
-        server {{ host }} {{ host }}:80 check inter 2000 fall 2 rise 2 weight 1
-{% endfor %}
-
-listen ingress-https
-        bind 0.0.0.0:443
-        mode tcp
-        option tcplog
-        option dontlognull
-        option dontlog-normal
-        balance {{ BALANCE_ALG }} 
-{% for host in groups['kube_master'] %}
-        server {{ host }} {{ host }}:443 check inter 2000 fall 2 rise 2 weight 1
-{% endfor %}

@@ -14,8 +14,6 @@
   - bridge
   - host-local
   - loopback
-  - cfssl
-  - cfssljson
   tags: upgrade_k8s
 
 # 每个 node 节点运行 haproxy 连接到多个 apiserver
@@ -112,12 +110,6 @@
   ignore_errors: true
 
 - block:
-    - name: 创建镜像目录
-      file: "name={{ base_dir }}/down/ state=directory"
-
-    - name: 获取镜像
-      copy: "src={{ base_dir }}/down/{{ dnscache_offline }} dest={{ base_dir }}/down/"
-
     - name: 获取已下载离线镜像信息
       command: "ls {{ base_dir }}/down"
       register: download_info

@@ -1,7 +1,7 @@
 # ex_lb 节点成员不能同时是 kube_node 节点，因为它们都需要安装 haproxy
-- name: fail info1
-  fail: msg="an 'ex_lb' node CAN NOT be a 'kube_node' node at the same time"
-  when: "inventory_hostname in groups['kube_node']"
+# - name: fail info1
+#   fail: msg="an 'ex_lb' node CAN NOT be a 'kube_node' node at the same time"
+#   when: "inventory_hostname in groups['kube_node']"
 
 # 自动设置LB节点变量'LB_IF'
 - name: 注册变量 LB_IF_TMP
@@ -13,6 +13,9 @@
   set_fact: LB_IF={{ LB_IF_TMP.stdout }}
   tags: restart_lb
 
+# - name: 输出变量
+#   debug: var=LB_IF_TMP.stdout
+
 - name: 创建相关目录
   file: name={{ item }} state=directory
   with_items:
@@ -20,7 +23,7 @@
   - /etc/keepalived 
 
 - name: 配置 haproxy
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
   tags: restart_lb
 
 - name: 配置 keepalived 主节点

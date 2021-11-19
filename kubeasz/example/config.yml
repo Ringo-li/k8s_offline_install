@@ -182,7 +182,7 @@ dashboardMetricsScraperVer: "__dash_metrics__"
 
 # ingress 自动安装
 ingress_install: "yes"
-# ingress_backend: "nginx-ingress"
+ingress_backend: "nginx-ingress"
 # ingress_backend: "traefik"
 # traefik_chart_ver: "__traefik_chart__"
 
