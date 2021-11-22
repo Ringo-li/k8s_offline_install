@@ -10,7 +10,7 @@ k8s全离线安装
 ## 项目地址
 [https://github.com/Ringo-li/k8s_offline_install](https://github.com/Ringo-li/k8s_offline_install)  
   
-基于以下原作者安装过程稍作改动：
+基于以下原作者安装过程稍作改动：  
 [https://github.com/bogeit/LearnK8s/blob/main/k8s_install_new.sh](https://github.com/bogeit/LearnK8s/blob/main/k8s_install_new.sh)
 [https://github.com/easzlab/kubeasz/blob/master/docs/setup/offline_install.md](https://github.com/easzlab/kubeasz/blob/master/docs/setup/offline_install.md)  
 
@@ -40,7 +40,7 @@ kubectl get pod -A
 
 ## 2.查看ingress等服务是否正常发布dashboard服务
 在同网段PC的hosts文件中加一行：  
-某一节点IP kubernetes.example.com  
+hosts中ex_lb设置的EX_APISERVER_VIP kubernetes.example.com  
 用浏览器访问  
 https://kubernetes.example.com  
 获取token：

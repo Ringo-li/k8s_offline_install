@@ -14,7 +14,7 @@ defaults
         timeout server  10m
 
 listen kube_master
-        bind 0.0.0.0:{{ EX_APISERVER_PORT }}
+        bind 127.0.0.1:6443
         mode tcp
         option tcplog
         option dontlognull
@@ -26,38 +26,24 @@ listen kube_master
 
 {% if INGRESS_NODEPORT_LB == "yes" %}
 listen ingress-node
-	bind 0.0.0.0:80
+	bind 0.0.0.0:8080
 	mode tcp
         option tcplog
         option dontlognull
         option dontlog-normal
         balance {{ BALANCE_ALG }}
-{% if groups['kube_node']|length > 3 %}
-        server {{ groups['kube_node'][0] }} {{ groups['kube_node'][0] }}:23456 check inter 5s fall 2 rise 2 weight 1
-        server {{ groups['kube_node'][1] }} {{ groups['kube_node'][1] }}:23456 check inter 5s fall 2 rise 2 weight 1
-        server {{ groups['kube_node'][2] }} {{ groups['kube_node'][2] }}:23456 check inter 5s fall 2 rise 2 weight 1
-{% else %}
-{% for host in groups['kube_node'] %}
-        server {{ host }} {{ host }}:23456 check inter 5s fall 2 rise 2 weight 1
+{% for host in groups['ex_lb'] %}
+        server {{ host }} {{ host }}:80 check inter 5s fall 2 rise 2 weight 1
 {% endfor %}
-{% endif %}
-{% endif %}
 
 {% if INGRESS_TLS_NODEPORT_LB == "yes" %}
 listen ingress-node-tls
-	bind 0.0.0.0:443
+	bind 0.0.0.0:8443
 	mode tcp
         option tcplog
         option dontlognull
         option dontlog-normal
         balance {{ BALANCE_ALG }}
-{% if groups['kube_node']|length > 3 %}
-        server {{ groups['kube_node'][0] }} {{ groups['kube_node'][0] }}:23457 check inter 5s fall 2 rise 2 weight 1
-        server {{ groups['kube_node'][1] }} {{ groups['kube_node'][1] }}:23457 check inter 5s fall 2 rise 2 weight 1
-        server {{ groups['kube_node'][2] }} {{ groups['kube_node'][2] }}:23457 check inter 5s fall 2 rise 2 weight 1
-{% else %}
-{% for host in groups['kube_node'] %}
-        server {{ host }} {{ host }}:23457 check inter 5s fall 2 rise 2 weight 1
+{% for host in groups['ex_lb'] %}
+        server {{ host }} {{ host }}:443 check inter 5s fall 2 rise 2 weight 1
 {% endfor %}
-{% endif %}
-{% endif %}

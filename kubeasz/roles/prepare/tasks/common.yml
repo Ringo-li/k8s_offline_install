@@ -58,3 +58,20 @@
 
 - name: 把SCTP列入内核模块黑名单
   copy: src=sctp.conf dest=/etc/modprobe.d/sctp.conf
+
+- name: "Set ssh"
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "UseDNS", line: "UseDNS no" }
+    - { regexp: "ClientAliveInterval", line: "ClientAliveInterval 600" }
+    - { regexp: "ClientAliveCountMax", line: "ClientAliveCountMax 2" }
+    - { regexp: "AddressFamily", line: "AddressFamily inet" }
+    - { regexp: "PermitRootLogin", line: "PermitRootLogin yes" }
+    - { regexp: "PermitEmptyPasswords", line: "PermitEmptyPasswords no" }
+    - { regexp: "PasswordAuthentication", line: "PasswordAuthentication no" }
+  notify:
+    - restart sshd
