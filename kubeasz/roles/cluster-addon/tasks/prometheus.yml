@@ -1,6 +1,42 @@
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
 
 - block:
+    - name: 检查是否已下载离线prometheus镜像
+      command: "ls {{ base_dir }}/down/prometheus"
+      register: download_info
+      connection: local
+      run_once: true
+    
+    - name: 尝试推送离线docker 镜像（若执行失败，可忽略）
+      copy: src={{ base_dir }}/down/prometheus/{{ item }} dest=/opt/kube/images/{{ item }}
+      when: 'item in download_info.stdout'
+      with_items:
+      - alertmanager_v0.21.0.tar
+      - configmap-reload_v0.4.0.tar
+      - node-exporter_v1.0.1.tar
+      - prometheus-config-reloader_v0.44.0.tar
+      - prometheus-operator_v0.44.0.tar
+      - prometheus_v2.22.1.tar
+      ignore_errors: true
+    
+    - name: 获取prometheus离线镜像推送情况
+      command: "ls /opt/kube/images"
+      register: image_info
+    
+    # 如果目录下有离线镜像，就把它导入到node节点上
+    - name: 导入prometheus的离线镜像（若执行失败，可忽略）
+      shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ item }}"
+      with_items:
+      - alertmanager_v0.21.0.tar
+      - configmap-reload_v0.4.0.tar
+      - node-exporter_v1.0.1.tar
+      - prometheus-config-reloader_v0.44.0.tar
+      - prometheus-operator_v0.44.0.tar
+      - prometheus_v2.22.1.tar
+      ignore_errors: true
+      when: "item in image_info.stdout and CONTAINER_RUNTIME == 'docker'" 
+
+- block:
     - name: 获取是否已创建命名空间{{ prom_namespace }}
       shell: "{{ base_dir }}/bin/kubectl get ns"
       register: ns_info

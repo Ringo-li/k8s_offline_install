@@ -20,25 +20,10 @@ alertmanager:
     receivers:
     - name: 'null'
 
-  ingress:
-    enabled: true
-    annotations: 
-      kubernetes.io/ingress.class: "nginx"
-      # 开启use-regex，启用path的正则匹配
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    labels: {}
-    hosts:
-      - alertmanager.example.com
-    path: /
-
-  # service:
-  #   portName: alertmanager
-
-  # ## Configuration for Alertmanager service
-  # service:
-  #   nodePort: 30902
-  #   type: NodePort 
+  ## Configuration for Alertmanager service
+  service:
+    nodePort: 30902
+    type: NodePort 
 
   alertmanagerSpec:
     image:
@@ -56,33 +41,9 @@ grafana:
   defaultDashboardsEnabled: true
   adminPassword: Admin1234!
 
-  ingress:
-    ## If true, Grafana Ingress will be created
-    ##
-    enabled: true
-
-    ## Annotations for Grafana Ingress
-    ##
-    annotations: 
-      kubernetes.io/ingress.class: "nginx"
-      # 开启use-regex，启用path的正则匹配
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /
-
-    ## Labels to be added to the Ingress
-    ##
-    labels: {}
-    hosts:
-      - grafana.example.com
-    ## Path for grafana ingress
-    path: /
-
-  # service:
-  #   portName: grafana
-
-  # service:
-  #   nodePort: 30903
-  #   type: NodePort 
+  service:
+    nodePort: 30903
+    type: NodePort 
 
 ## Component scraping the kube api server
 kubeApiServer:
@@ -149,11 +110,6 @@ kubeProxy:
 prometheusOperator:
   enabled: true
 
-  tls:
-    enabled: true
-    # Value must match version names from https://golang.org/pkg/crypto/tls/#pkg-constants
-    tlsMinVersion: VersionTLS12
-
   ## Namespaces to scope the interaction of the Prometheus Operator and the apiserver (allow list).
   ## This is mutually exclusive with denyNamespaces. Setting this to an empty object will disable the configuration
   namespaces: {}
@@ -196,23 +152,10 @@ prometheusOperator:
 prometheus:
   enabled: true
 
-  ingress:
-    enabled: true
-    annotations: 
-      kubernetes.io/ingress.class: "nginx"
-      # 开启use-regex，启用path的正则匹配
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    labels: {}
-    hosts:
-      - prometheu.example.com
-    path: /
-
-  # service:
-  #   portName: prometheu
-  # service:
-  #     nodePort: 30901
-  #     type: NodePort 
+  ## Configuration for Prometheus service
+  service:
+    nodePort: 30901
+    type: NodePort 
 
   ## Settings affecting prometheusSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
