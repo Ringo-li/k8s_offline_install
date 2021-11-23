@@ -7,7 +7,7 @@ k8s_offline_install.sh
 #kubeasz/ansible.cfg
 #kubeasz/ezctl
 #kubeasz/ezdown
-#vagrant
+vagrant/
 #kubeasz/bin/
 kubeasz/down/
 kubeasz/clusters/
