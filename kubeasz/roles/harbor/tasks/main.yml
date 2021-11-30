@@ -22,12 +22,18 @@
     copy: src={{ base_dir }}/bin/docker-compose dest={{ bin_dir }}/docker-compose mode=0755
 
   - name: 下发 harbor 离线安装包
-    copy:
+    unarchive:
       src: "{{ base_dir }}/down/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
-      dest: "/data/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+      dest: "/data/"
+      copy: yes
 
-  - name: 解压 harbor 离线安装包
-    shell: "cd /data && tar -xf harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+  # - name: 下发 harbor 离线安装包
+  #   copy:
+  #     src: "{{ base_dir }}/down/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+  #     dest: "/data/harbor-offline-installer-{{ HARBOR_VER }}.tgz"
+
+  # - name: 解压 harbor 离线安装包
+  #   shell: "cd /data && tar -xf harbor-offline-installer-{{ HARBOR_VER }}.tgz"
 
   - name: 导入 harbor 所需 docker images
     shell: "{{ bin_dir }}/docker load -i /data/harbor/harbor.{{ HARBOR_VER }}.tar.gz"
@@ -56,7 +62,7 @@
     copy: src={{ base_dir }}/down/{{ item }} dest={{ ca_dir }}/{{ item }}
     with_items: 
     - harbor.pem
-    - harbor-key.pem  
+    - harbor-key.pem
     when: SELF_SIGNED_CERT == 'no'
   
   - name: 配置 harbor.cfg 文件
@@ -65,11 +71,17 @@
 
   - name: 配置 harbor.yml 文件
     template: src=harbor-{{ HARBOR_VER_MAIN }}.yml.j2 dest=/data/harbor/harbor.yml
-    when: HARBOR_VER_MAIN in ["v1.8", "v1.9", "v1.10"]
+    when: HARBOR_VER_MAIN in ["v1.8", "v1.9", "v1.10", "v2.2"]
   
   
+  - name: 安装 harbor 
+    shell: "cd /data/harbor && ./install.sh"
+    when: HARBOR_VER_MAIN == "v2.2"
+
   - name: 安装 harbor --with-clair
     shell: "cd /data/harbor && \
     export PATH={{ bin_dir }}:$PATH && \
       ./install.sh  --with-clair"
-  when: '"registry" not in result.stdout'
+    when: HARBOR_VER_MAIN != "v2.2"
+
+  when: '"registry" not in result.stdout' 

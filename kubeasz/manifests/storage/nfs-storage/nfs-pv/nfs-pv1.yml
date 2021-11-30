@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv1
+  labels:
+    type: test-claim    # 这里建议打上一个独有的标签，方便在多个pv的时候方便提供pvc选择挂载
+spec:
+  capacity:
+    storage: 1Gi     # <----------  1
+  accessModes:
+    - ReadWriteOnce     # <----------  2
+  persistentVolumeReclaimPolicy: Recycle     # <----------  3
+  storageClassName: nfs     # <----------  4
+  nfs:
+    path: /nfs_dir/k8s-pv/pv1     # <----------  5
+    server: 192.168.33.40
+
+
+# 1.capacity 指定 PV 的容量为 1G。
+# 2.accessModes 指定访问模式为 ReadWriteOnce，支持的访问模式有： ReadWriteOnce – PV 能以 read-write 模式 mount 到单个节点。
+#   ReadOnlyMany – PV 能以 read-only 模式 mount 到多个节点。 ReadWriteMany – PV 能以 read-write 模式 mount 到多个节点。
+# 3.persistentVolumeReclaimPolicy 指定当 PV 的回收策略为 Recycle，支持的策略有： Retain – 需要管理员手工回收。
+#   Recycle – 清除 PV 中的数据，效果相当于执行 rm -rf /nfs_dir/k8s-pv/pv1/*。 Delete – 删除 Storage Provider 上的对应存储资源，
+#   例如 AWS EBS、GCE PD、Azure Disk、OpenStack Cinder Volume 等。
+# 4.storageClassName 指定 PV 的 class 为 nfs。相当于为 PV 设置了一个分类，PVC 可以指定 class 申请相应 class 的 PV。
+# 5.指定 PV 在 NFS 服务器上对应的目录，这里注意，我测试的时候，需要手动先创建好这个目录并授权好，不然后面挂载会提示目录
+#   不存在 mkdir /nfs_dir/k8s-pv/pv1 && chown -R nobody.nobody /nfs_dir。

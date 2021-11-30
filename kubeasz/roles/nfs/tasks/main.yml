@@ -1,0 +1,20 @@
+- name: 获取已下载离线镜像信息
+  command: "ls {{ base_dir }}/down"
+  register: download_info
+  connection: local
+  run_once: true
+
+- debug: var=download_info.stdout
+  run_once: true
+
+- import_tasks: nfs-node.yml
+  when: 
+    - "inventory_hostname in groups['nfs']"
+    - '"nfs" in download_info.stdout' 
+    - NEW_INSTALL == "yes"
+
+- import_tasks: k8s-cluster.yml
+  when: "inventory_hostname in groups['kube_node']"
+  
+  
+

@@ -195,4 +195,4 @@ prom_chart_ver: "__prom_chart__"
 # role:harbor
 ############################
 # harbor version，完整版本号
-HARBOR_VER: "v1.9.4"
+HARBOR_VER: "v2.2.2"

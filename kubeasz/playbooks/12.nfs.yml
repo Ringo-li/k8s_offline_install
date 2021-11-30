@@ -1,0 +1,9 @@
+- hosts:
+  - kube_node
+  - nfs 
+  roles:
+  # - { role: os-harden, when: "OS_HARDEN|bool" , when: "inventory_hostname in groups['nfs']"}
+  # - { role: chrony, when: "NEW_INSTALL == 'yes' and groups['chrony']|length > 0", when: "inventory_hostname in groups['nfs']"}
+  # - { role: prepare, when: "NEW_INSTALL == 'yes'", when: "inventory_hostname in groups['nfs']"}
+  # - { role: nfs, when: "NEW_INSTALL == 'yes'", when: "inventory_hostname in groups['nfs']" }
+  - { role: nfs }

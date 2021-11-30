@@ -11,7 +11,7 @@
   tasks:
   - name: Fetching the HARBOR SERVER's CA cert
     fetch:
-      src: "{{ ca_dir }}/ca.pem"
+      src: "{{ ca_dir }}/harbor.pem"
       dest: "{{ base_dir }}/down/"
       flat: yes
     when: hostvars[groups.harbor[0]]['SELF_SIGNED_CERT'] == 'yes'
@@ -33,12 +33,12 @@
           file: name=/etc/docker/certs.d/{{ harbor_hostname }} state=directory
     
         - name: Installing the HARBOR SERVER's CA cert for docker
-          copy: src={{ base_dir }}/down/ca.pem dest=/etc/docker/certs.d/{{ harbor_hostname }}/ca.crt
+          copy: src={{ base_dir }}/down/harbor.pem dest=/etc/docker/certs.d/{{ harbor_hostname }}/ca.crt
         when: CONTAINER_RUNTIME == 'docker'
 
       - block:  
         - name: Installing the HARBOR SERVER's CA cert on k8s nodes
-          copy: src={{ base_dir }}/down/ca.pem dest=/usr/share/ca-certificates/harbor-ca.crt
+          copy: src={{ base_dir }}/down/harbor.pem dest=/usr/share/ca-certificates/harbor-ca.crt
 
         - name: Add the HARBOR SERVER's CA cert 
           lineinfile:
@@ -58,7 +58,7 @@
 
       - block:  
         - name: Installing the HARBOR SERVER's CA cert on k8s nodes
-          copy: src={{ base_dir }}/down/ca.pem dest=/etc/pki/ca-trust/source/anchors/harbor-ca.crt
+          copy: src={{ base_dir }}/down/harbor.pem dest=/etc/pki/ca-trust/source/anchors/harbor-ca.crt
 
         - name: Update the trusted ca-certificates
           shell: 'update-ca-trust'
@@ -87,6 +87,7 @@
       regexp: '{{ harbor_hostname }}'
       line: "{{ groups['harbor'][0] }} {{ harbor_hostname }}"
     when: 'ansible_distribution in ["Ubuntu","Debian"]'
+    ignore_errors: true
 
   - name: Adding cloud-init hosts template (redhat) entry for the HARBOR DOMAIN
     lineinfile:
@@ -95,3 +96,4 @@
       regexp: '{{ harbor_hostname }}'
       line: "{{ groups['harbor'][0] }} {{ harbor_hostname }}"
     when: 'ansible_distribution in ["CentOS","RedHat","Amazon","Aliyun"]'
+    ignore_errors: true
