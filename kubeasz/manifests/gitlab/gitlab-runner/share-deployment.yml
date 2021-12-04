@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner-share
+  namespace: gitlab-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gitlab-runner-share
+  template:
+    metadata:
+      labels:
+        name: gitlab-runner-share
+    spec:
+      hostAliases:
+      - ip: "10.68.218.106"
+        hostnames:
+        - "git.example.com"
+      serviceAccountName: gitlab
+      containers:
+      - args:
+        - run
+        image: harbor.example.com/library/gitlab-runner:v13.10.0
+        name: gitlab-runner2-ver130806-share
+        volumeMounts:
+        - mountPath: /etc/gitlab-runner
+          name: config
+        - mountPath: /etc/ssl/certs
+          name: cacerts
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - persistentVolumeClaim:
+          claimName: gitlab-runner-share
+        name: config
+      - hostPath:
+          path: /usr/share/ca-certificates/mozilla
+        name: cacerts

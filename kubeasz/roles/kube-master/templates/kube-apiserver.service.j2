@@ -35,7 +35,8 @@ ExecStart={{ bin_dir }}/kube-apiserver \
   --proxy-client-cert-file={{ ca_dir }}/aggregator-proxy.pem \
   --proxy-client-key-file={{ ca_dir }}/aggregator-proxy-key.pem \
   --enable-aggregator-routing=true \
-  --v=2
+  --v=2 \
+  --feature-gates=RemoveSelfLink=false
 Restart=always
 RestartSec=5
 Type=notify

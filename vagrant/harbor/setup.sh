@@ -23,9 +23,3 @@ systemctl restart sshd
 # # showmount -e 127.0.0.1                 
 # # Export list for 10.0.1.201:
 # # /nfs_dir *
-
-# rsync -Pa --delete  /ansible/one-key-install-k8s/kubeasz/roles/ /etc/kubeasz/roles/
-# rsync -Pa  /ansible/one-key-install-k8s/kubeasz/playbooks/ /etc/kubeasz/playbooks/
-# rsync -Pa  /ansible/one-key-install-k8s/kubeasz/down/ /etc/kubeasz/down/
-# rsync -Pa  /ansible/one-key-install-k8s/kubeasz/manifests/ /etc/kubeasz/manifests/
-# cat /ansible/one-key-install-k8s/hosts > /etc/kubeasz/clusters/k8s-cluster/hosts

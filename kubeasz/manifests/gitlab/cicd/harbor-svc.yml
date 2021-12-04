@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: harbor
+  namespace: gitlab-ns
+spec:
+  type: ClusterIP
+  ports:
+  - port: 443
+    protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: harbor
+  namespace: gitlab-ns
+subsets:
+- addresses:
+  - ip: 192.168.33.40
+    nodeName: harbor
+  ports:
+  - port: 443
+    protocol: TCP

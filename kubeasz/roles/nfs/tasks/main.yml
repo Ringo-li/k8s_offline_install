@@ -16,5 +16,3 @@
 - import_tasks: k8s-cluster.yml
   when: "inventory_hostname in groups['kube_node']"
   
-  
-

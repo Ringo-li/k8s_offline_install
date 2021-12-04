@@ -2,8 +2,6 @@
   shell: "rpm -qa |  grep nfs"
   register: install_info
 
-# - debug: var=install_info.stdout
-
 - block:
   - name: 创建nfs数据目录
     file:
