@@ -1,0 +1,54 @@
+# 目前没有找到docker "storage-driver"为 "overlay2"时后端存储使用nfs的方案，因为使用nfs时storage-driver只能说vfs，这两种存储驱动因为存储方式的不同，生成的image layer也有区别。如果能找到转换方案或者兼容方案就可以了。
+
+
+# # PVC
+# ---
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: dind-data-root
+#   namespace: kube-system
+# spec:
+#   storageClassName: nfs-sc
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 30Gi
+
+# pv
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dind-data-root
+  labels:
+    type: dind-data-root
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-sc
+  nfs:
+    path: /data/nfs_dir2/dind-data-root
+    server: 192.168.33.40
+
+# pvc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dind-data-root
+  namespace: kube-system
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-sc
+  selector:
+    matchLabels:
+      type: dind-data-root

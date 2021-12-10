@@ -1,0 +1,158 @@
+stages:
+  - build
+  - deploy
+  - rollback
+
+# tag name need: 20.11.21.01
+variables:
+  namecb: "flask-test"
+  svcport: "5000"
+  replicanum: "10"
+  ingress: "flask-test.example.com"
+  certname: "mytls"
+  CanarylIngressNum: "20"
+
+.deploy_k8s: &deploy_k8s |
+  if [ $CANARY_CB -eq 1 ];then 
+    echo "Start the canary deployment"
+    cp -arf .project-name-canary.yaml ${namecb}-${CI_COMMIT_TAG}.yaml; 
+    sed -ri "s+CanarylIngressNum+${CanarylIngressNum}+g" ${namecb}-${CI_COMMIT_TAG}.yaml; 
+    sed -ri "s+NomalIngressNum+$(expr 100 - ${CanarylIngressNum})+g" ${namecb}-${CI_COMMIT_TAG}.yaml ;
+  else 
+    echo "Start the official deployment"
+    cp -arf .project-name.yaml ${namecb}-${CI_COMMIT_TAG}.yaml;
+  fi
+  sed -ri "s+projectnamecb.example.com+${ingress}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+projectnamecb+${namecb}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+5000+${svcport}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+replicanum+${replicanum}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+mytls+${certname}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+mytagcb+${CI_COMMIT_TAG}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  sed -ri "s+harbor.example.com/library+${IMG_URL}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
+  cat ${namecb}-${CI_COMMIT_TAG}.yaml
+  echo "make kube dir"
+  [ -d ~/.kube ] || mkdir ~/.kube
+  echo "set k8s env"
+  echo "$KUBE_CONFIG" > ~/.kube/config
+  if [ $NORMAL_CB -eq 1 ];then 
+    if kubectl get deployments.|grep -w ${namecb}-canary &>/dev/null;then 
+      echo "delete canary deployment"
+      kubectl delete deployments.,svc ${namecb}-canary 
+      echo "delete canary deployment success"
+    fi;
+  fi
+  echo "Start the deployment"
+  kubectl apply -f ${namecb}-${CI_COMMIT_TAG}.yaml --record
+  echo
+  echo
+  echo "============================================================="
+  echo "                    Rollback Indx List"
+  echo "============================================================="
+  kubectl rollout history deployment ${namecb}|tail -5|awk -F"[ =]+" '{print $1"\t"$5}'|sed '$d'|sed '$d'|sort -r|awk '{print $NF}'|awk '$0=""NR".   "$0'
+
+
+.rollback_k8s: &rollback_k8s |
+  [ -d ~/.kube ] || mkdir ~/.kube
+  echo "$KUBE_CONFIG" > ~/.kube/config
+  last_version_command=$( kubectl rollout history deployment ${namecb}|tail -5|awk -F"[ =]+" '{print $1"\t"$5}'|sed '$d'|sed '$d'|tail -${ROLL_NUM}|head -1 )
+  last_version_num=$( echo ${last_version_command}|awk '{print $1}' )
+  last_version_name=$( echo ${last_version_command}|awk '{print $2}' )
+  kubectl rollout undo deployment ${namecb} --to-revision=$last_version_num
+  echo $last_version_num
+  echo $last_version_name
+  kubectl rollout history deployment ${namecb}
+
+
+build:
+  stage: build
+  retry: 2
+  variables:
+    # use dind.yaml to depoy dind'service on k8s
+    DOCKER_HOST: tcp://10.68.124.112:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  ##services:
+    ##- docker:dind
+  before_script:
+    - docker login ${REGISTRY_URL} -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  script:
+    - docker pull ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:latest || true
+    - docker build --network host --cache-from ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:latest --tag ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:$CI_COMMIT_TAG --tag ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:latest .
+    - docker push ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:$CI_COMMIT_TAG
+    - docker push ${REGISTRY_URL}/${REGISTRY_NS}/${namecb}:latest
+  after_script:
+    - docker logout ${REGISTRY_URL}
+  tags:
+    - "docker"
+  only:
+    - tags
+
+
+#--------------------------K8S DEPLOY--------------------------------------------------
+
+Example-deploy:
+  stage: deploy
+  image: harbor.example.com/library/kubectl:v1.19.9
+  variables:
+    KUBE_CONFIG: "$KUBE_CONFIG_TEST"
+    IMG_URL: "${REGISTRY_URL}/${REGISTRY_NS}"
+    NORMAL_CB: 1
+  script:
+    - *deploy_k8s
+    # - /bin/sh ./test.sh
+  when: manual
+  only:
+    - tags
+
+# canary start
+Example-canary-deploy:
+  stage: deploy
+  image: harbor.example.com/library/kubectl:v1.19.9
+  variables:
+    KUBE_CONFIG: "$KUBE_CONFIG_TEST"
+    IMG_URL: "${REGISTRY_URL}/${REGISTRY_NS}"
+    CANARY_CB: 1
+  script:
+    - *deploy_k8s
+  when: manual
+  only:
+    - tags
+# canary end
+
+Example-rollback-1:
+  stage: rollback
+  image: harbor.example.com/library/kubectl:v1.19.9
+  variables:
+    KUBE_CONFIG: "$KUBE_CONFIG_TEST"
+    ROLL_NUM: 1
+  script:
+    - *rollback_k8s
+  when: manual
+  only:
+    - tags
+
+
+Example-rollback-2:
+  stage: rollback
+  image: harbor.example.com/library/kubectl:v1.19.9
+  variables:
+    KUBE_CONFIG: "$KUBE_CONFIG_TEST"
+    ROLL_NUM: 2
+  script:
+    - *rollback_k8s
+  when: manual
+  only:
+    - tags
+
+
+Example-rollback-3:
+  stage: rollback
+  image: harbor.example.com/library/kubectl:v1.19.9
+  variables:
+    KUBE_CONFIG: "$KUBE_CONFIG_TEST"
+    ROLL_NUM: 3
+  script:
+    - *rollback_k8s
+  when: manual
+  only:
+    - tags

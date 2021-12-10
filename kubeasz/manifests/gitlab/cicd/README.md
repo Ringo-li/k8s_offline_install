@@ -9,5 +9,5 @@ File       KUBE_CONFIG_TEST            k8s相关config配置文件内容
 ```
 一键生成k8s相关config配置文件内容  
 ```
-bash kube_config_generate.sh flask-test https://192.168.33.100:6443
+bash kube_config_generate.sh flask-test https://192.168.33.62:6443
 ```

@@ -1,0 +1,141 @@
+# dind pip instll staus : kill -9  code 137(128+9) ,may be limits(cpu,memory) resources need change
+
+# only have docker client ,use dind can be use normal
+#dindSvc=$(kubectl -n kube-system get svc dind |awk 'NR==2{print $3}')
+#export DOCKER_HOST="tcp://${dindSvc}:2375/"
+#export DOCKER_DRIVER=overlay2
+#export DOCKER_TLS_CERTDIR=""
+
+
+# # Secret
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   labels:
+#     k8s-app: dind
+#   name: dind-token
+#   namespace: kube-system
+# type: generic
+
+---
+
+# SVC
+kind: Service
+apiVersion: v1
+metadata:
+  name: dind
+  namespace: kube-system
+spec:
+  selector:
+    app: dind
+  ports:
+    - name: tcp-port
+      port: 2375
+      protocol: TCP
+      targetPort: 2375
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dind
+  namespace: kube-system
+  labels:
+    app: dind
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dind
+  template:
+    metadata:
+      labels:
+        app: dind
+    spec:
+      hostNetwork: true
+      hostAliases:
+      - ip: "192.168.33.40"
+        hostnames:
+        - "harbor.example.com"
+      imagePullSecrets:
+      - name: dind-imagepull-token
+      containers:
+      - name: dind
+        #image: docker:19-dind
+        image: harbor.example.com/library/docker:19-dind
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "docker login harbor.example.com -u 'admin' -p 'Harbor12345'"]
+           # 3. when delete this pod , use this keep kube-proxy to flush role done
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
+        ports:
+        - containerPort: 2375
+#        resources:
+#          requests:
+#            cpu: 200m
+#            memory: 256Mi
+#          limits:
+#            cpu: 0.5
+#            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 2375
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        livenessProbe:
+          tcpSocket:
+            port: 2375
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        securityContext: 
+            privileged: true
+        env: 
+          - name: DOCKER_HOST 
+            value: tcp://localhost:2375
+          - name: DOCKER_DRIVER 
+            value: overlay2
+          - name: DOCKER_TLS_CERTDIR 
+            value: ''
+        volumeMounts: 
+          - name: data-root
+            mountPath: /var/lib/docker
+          - name: tz-config
+            mountPath: /etc/localtime
+           # 直接挂载本地访问仓库证书就可以了。
+          - name: dind-token
+            mountPath: /etc/docker/certs.d/harbor.example.com/ca.crt
+            # subPath: dind-token
+       # kubectl create secret docker-registry dind-imagepull-token -n kube-system --docker-server=harbor.example.com --docker-username=admin --docker-password=Harbor12345 --docker-email=admin@example.com
+      volumes:
+#      - emptyDir:
+#          medium: ""
+#          sizeLimit: 10Gi
+      # 无法使用pvc共享后端存储，此方案放弃。
+      # - persistentVolumeClaim:
+      #     claimName: dind-data-root
+      #   name: data-root
+      - hostPath:
+          path: /var/lib/container/docker
+        name: data-root
+      - hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai
+        name: tz-config
+      - hostPath:
+          path: /etc/docker/certs.d/harbor.example.com/ca.crt
+        name: dind-token
+        
+#        kubectl taint node 10.0.1.201 Ingress=:NoExecute
+#        kubectl describe node 10.0.1.201 |grep -i taint
+#        kubectl taint node 10.0.1.201 Ingress:NoExecute-
+
+      nodeSelector:
+        kubernetes.io/hostname: "192.168.33.62"
+      
+      # 忽略所有污点
+      tolerations:
+      - operator: Exists

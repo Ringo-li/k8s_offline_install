@@ -17,12 +17,15 @@ spec:
       - ip: "10.68.218.106"
         hostnames:
         - "git.example.com"
+      # - ip: "192.168.33.40"
+      #   hostnames:
+      #   - "harbor.example.com"
       serviceAccountName: gitlab
       containers:
       - args:
         - run
         image: harbor.example.com/library/gitlab-runner:v13.10.0
-        name: gitlab-runner2-ver130806-share
+        name: gitlab-runner-share
         volumeMounts:
         - mountPath: /etc/gitlab-runner
           name: config

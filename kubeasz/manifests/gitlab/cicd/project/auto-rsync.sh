@@ -1,0 +1,1 @@
+rsync -a --progress /mnt/z/one-key-install-k8s/kubeasz/manifests/gitlab/cicd/project/ /mnt/d/share/flask-test/monitoring/ 

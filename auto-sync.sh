@@ -25,6 +25,6 @@ git config --global user.name "Ringo-li"
 for file in ${file_list[*]}
 do
   echo "${file} finished "
-  rsync -a --progress /mnt/y/one-key-install-k8s/${file} /mnt/d/share/one-key-install-k8s/${file} --delete
+  rsync -a --progress /mnt/z/one-key-install-k8s/${file} /mnt/d/share/one-key-install-k8s/${file} --delete
 done
 #rsync -rv /mnt/z/one-key-install-k8s/vagrant/ /mnt/d/share/test/ --delete

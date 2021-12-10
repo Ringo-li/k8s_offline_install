@@ -1,0 +1,108 @@
+---
+# SVC
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    kae: "true"
+    kae-app-name: projectnamecb
+    kae-type: app
+  name: projectnamecb
+spec:
+  selector:
+    kae: "true"
+    kae-app-name: projectnamecb
+    kae-type: app
+  ports:
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 5000
+#      nodePort: 12345
+#  type: NodePort
+
+---
+# Ingress
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    kae: "true"
+    kae-app-name: projectnamecb
+    kae-type: app
+  name: projectnamecb
+spec:
+  tls:
+  - hosts:
+    - projectnamecb.example.com
+    secretName: mytls
+  rules:
+  - host: projectnamecb.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: projectnamecb
+          servicePort: 80
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projectnamecb
+  labels:
+    kae: "true"
+    kae-app-name: projectnamecb
+    kae-type: app
+spec:
+  replicas: replicanum
+  selector:
+    matchLabels:
+      kae-app-name: projectnamecb
+  template:
+    metadata:
+      labels:
+        kae: "true"
+        kae-app-name: projectnamecb
+        kae-type: app
+    spec:
+      containers:
+      - name: projectnamecb
+        image: harbor.example.com/library/projectnamecb:mytagcb
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 0.1
+            memory: 0.1Gi
+          limits:
+            cpu: 0.2
+            memory: 0.2Gi
+      imagePullSecrets:
+      - name: example-secret
+      tolerations:
+      - operator: Exists

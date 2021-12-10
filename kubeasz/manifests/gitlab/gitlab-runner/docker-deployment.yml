@@ -17,6 +17,9 @@ spec:
       - ip: "10.68.218.106"
         hostnames:
         - "git.example.com"
+      # - ip: "192.168.33.40"
+      #   hostnames:
+      #   - "harbor.example.com"
       serviceAccountName: gitlab
       containers:
       - args:
