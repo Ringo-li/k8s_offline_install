@@ -8,6 +8,8 @@ iptables -t nat -A PREROUTING -d 172.31.33.20 -p tcp --dport 80 -j DNAT --to 192
 iptables -t nat -A POSTROUTING -d 192.168.33.100 -p tcp --dport 80 -j SNAT --to 192.168.33.20
 iptables -t nat -A PREROUTING -d 172.31.33.20 -p tcp --dport 22 -j DNAT --to 192.168.33.100:30331
 iptables -t nat -A POSTROUTING -d 192.168.33.100 -p tcp --dport 30331 -j SNAT --to 192.168.33.20
+iptables -t nat -A POSTROUTING -d 192.168.33.100 -p tcp --dport 30331 -j SNAT --to 192.168.33.20
+iptables -t nat -A PREROUTING -d 172.31.33.20 -p tcp --dport 22 -j DNAT --to 192.168.33.100:30331
 iptables-save > /etc/sysconfig/iptables
 echo "iptables-restore < /etc/sysconfig/iptables" >> /etc/rc.d/rc.local
 chmod 755 /etc/rc.d/rc.local

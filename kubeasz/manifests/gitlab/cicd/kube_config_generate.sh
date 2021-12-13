@@ -66,13 +66,13 @@ metadata:
   namespace: $namespace
 spec:
   hard:
-    pods: "10"
+    pods: "20"
     services: "10"
-    persistentvolumeclaims: "5"
-    requests.cpu: "1"
-    requests.memory: 2Gi
-    limits.cpu: "2"
-    limits.memory: 4Gi" | kubectl apply -f -
+    persistentvolumeclaims: "20"
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi" | kubectl apply -f -
 kubectl -n $namespace describe quota $namespace-compute-resources
 mkdir -p $folder
 tokenName=$(kubectl get sa $namespace-user -n $namespace -o "jsonpath={.secrets[0].name}")

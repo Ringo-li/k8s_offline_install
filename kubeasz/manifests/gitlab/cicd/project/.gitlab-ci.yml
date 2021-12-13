@@ -14,12 +14,12 @@ variables:
 
 .deploy_k8s: &deploy_k8s |
   if [ $CANARY_CB -eq 1 ];then 
-    echo "Start the canary deployment"
+    echo "========================Start the canary deployment========================"
     cp -arf .project-name-canary.yaml ${namecb}-${CI_COMMIT_TAG}.yaml; 
     sed -ri "s+CanarylIngressNum+${CanarylIngressNum}+g" ${namecb}-${CI_COMMIT_TAG}.yaml; 
     sed -ri "s+NomalIngressNum+$(expr 100 - ${CanarylIngressNum})+g" ${namecb}-${CI_COMMIT_TAG}.yaml ;
   else 
-    echo "Start the official deployment"
+    echo "========================Start the official deployment========================"
     cp -arf .project-name.yaml ${namecb}-${CI_COMMIT_TAG}.yaml;
   fi
   sed -ri "s+projectnamecb.example.com+${ingress}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
@@ -30,18 +30,18 @@ variables:
   sed -ri "s+mytagcb+${CI_COMMIT_TAG}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
   sed -ri "s+harbor.example.com/library+${IMG_URL}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
   cat ${namecb}-${CI_COMMIT_TAG}.yaml
-  echo "make kube dir"
+  echo "\n========================make kube dir========================"
   [ -d ~/.kube ] || mkdir ~/.kube
-  echo "set k8s env"
+  echo "========================set k8s env========================"
   echo "$KUBE_CONFIG" > ~/.kube/config
   if [ $NORMAL_CB -eq 1 ];then 
     if kubectl get deployments.|grep -w ${namecb}-canary &>/dev/null;then 
-      echo "delete canary deployment"
+      echo "========================delete canary deployment========================"
       kubectl delete deployments.,svc ${namecb}-canary 
-      echo "delete canary deployment success"
+      echo "========================delete canary deployment success========================"
     fi;
   fi
-  echo "Start the deployment"
+  echo "========================Start the deployment========================"
   kubectl apply -f ${namecb}-${CI_COMMIT_TAG}.yaml --record
   echo
   echo
