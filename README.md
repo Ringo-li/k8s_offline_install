@@ -49,9 +49,17 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | gre
 ```
 
 # 单独执行
+## 排错
 安装出错单步安装时使用，需要一点ansible基础
 
 ```
 cd /etc/kubeasz
 ansible-playbook -i "clusters/k8s-cluster/hosts" -e "@clusters/k8s-cluster/config.yml" "playbooks/04.kube-master.yml" --start-at-task="准备kubelet 证书签名请求"
+```
+## 添加节点
+```
+scp -r /root/.ssh/ 192.168.33.65:/root/
+cd /etc/kubeasz/
+sed -i "/\[kube_node/a 192.168.33.65" "clusters/k8s-cluster/hosts"
+ansible-playbook -i "clusters/k8s-cluster/hosts" "playbooks/22.addnode.yml" -e "NODE_TO_ADD=192.168.33.65" -e "@clusters/k8s-cluster/config.yml"
 ```

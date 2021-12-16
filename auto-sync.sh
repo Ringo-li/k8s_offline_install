@@ -18,9 +18,9 @@ kubeasz/roles/
 kubeasz/tools/
 )
 
-cp -r /mnt/c/Users/Ringo/.ssh/ ~/
-git config --global user.email "ry.li@qq.com"
-git config --global user.name "Ringo-li"
+#cp -r /mnt/c/Users/Ringo/.ssh/ ~/
+#git config --global user.email "ry.li@qq.com"
+#git config --global user.name "Ringo-li"
 
 for file in ${file_list[*]}
 do

@@ -15,7 +15,7 @@ spec:
     spec:
       initContainers:
       - name: init-mysql
-        image: mysql:5.7
+        image: harbor.example.com/library/mysql:5.7
         command:
         - bash
         - "-c"
@@ -38,9 +38,16 @@ spec:
           mountPath: /mnt/conf.d
         - name: config-map
           mountPath: /mnt/config-map
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 1Gi
+          limits:
+            cpu: 1
+            memory: 2Gi
       - name: clone-mysql
         #image: gcr.io/google-samples/xtrabackup:1.0
-        image: jmgao1983/xtrabackup:1.0
+        image: harbor.example.com/library/xtrabackup:1.0
         command:
         - bash
         - "-c"
@@ -62,9 +69,16 @@ spec:
           subPath: mysql
         - name: conf
           mountPath: /etc/mysql/conf.d
+        resources:
+          requests:
+            cpu: 0.1
+            memory: 0.1Gi
+          limits:
+            cpu: 0.2
+            memory: 0.2Gi
       containers:
       - name: mysql
-        image: mysql:5.7
+        image: harbor.example.com/library/mysql:5.7
         env:
         - name: MYSQL_ALLOW_EMPTY_PASSWORD
           value: "1"
@@ -79,8 +93,11 @@ spec:
           mountPath: /etc/mysql/conf.d
         resources:
           requests:
-            cpu: 500m
+            cpu: 0.5
             memory: 1Gi
+          limits:
+            cpu: 1
+            memory: 2Gi
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -96,7 +113,7 @@ spec:
           timeoutSeconds: 1
       - name: xtrabackup
         #image: gcr.io/google-samples/xtrabackup:1.0
-        image: jmgao1983/xtrabackup:1.0
+        image: harbor.example.com/library/xtrabackup:1.0
         ports:
         - name: xtrabackup
           containerPort: 3307
@@ -147,8 +164,11 @@ spec:
           mountPath: /etc/mysql/conf.d
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 0.1
+            memory: 0.1Gi
+          limits:
+            cpu: 0.2
+            memory: 0.2Gi
       volumes:
       - name: conf
         emptyDir: {}
@@ -160,7 +180,7 @@ spec:
       name: data
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: "nfs-db"
+      storageClassName: "nfs-sc"
       resources:
         requests:
           storage: 5Gi

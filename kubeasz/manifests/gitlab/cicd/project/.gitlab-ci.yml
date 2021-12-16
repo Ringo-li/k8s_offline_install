@@ -9,8 +9,8 @@ variables:
   svcport: "5000"
   replicanum: "10"
   ingress: "flask-test.example.com"
-  certname: "mytls"
-  CanarylIngressNum: "20"
+  certname: "flask-test"
+  CanarylIngressNum: "40"
 
 .deploy_k8s: &deploy_k8s |
   if [ $CANARY_CB -eq 1 ];then 
@@ -30,7 +30,8 @@ variables:
   sed -ri "s+mytagcb+${CI_COMMIT_TAG}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
   sed -ri "s+harbor.example.com/library+${IMG_URL}+g" ${namecb}-${CI_COMMIT_TAG}.yaml
   cat ${namecb}-${CI_COMMIT_TAG}.yaml
-  echo "\n========================make kube dir========================"
+  echo " "
+  echo "========================make kube dir========================"
   [ -d ~/.kube ] || mkdir ~/.kube
   echo "========================set k8s env========================"
   echo "$KUBE_CONFIG" > ~/.kube/config

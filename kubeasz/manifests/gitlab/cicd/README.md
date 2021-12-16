@@ -10,4 +10,9 @@ File       KUBE_CONFIG_TEST            k8s相关config配置文件内容
 一键生成k8s相关config配置文件内容  
 ```
 bash kube_config_generate.sh flask-test https://192.168.33.62:6443
+cat kube_config/flask-test.kube.conf
+```
+生成镜像拉取权限
+```
+kubectl create secret docker-registry flask-test-secret -n meiduo --docker-server=harbor.example.com --docker-username=admin --docker-password=Harbor12345 --docker-email=admin@example.com
 ```
